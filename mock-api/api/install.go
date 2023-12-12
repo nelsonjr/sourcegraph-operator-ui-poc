@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 )
@@ -30,20 +29,13 @@ func InstallProgressHandler(w http.ResponseWriter, r *http.Request) {
 		Error:    installError,
 		Tasks:    installTasks,
 	}
-	response, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	if installError == "" {
 		installTasks = progressTasks(installTasks)
 	}
 
 	log.Println("Sending current install progress", result)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	sendJson(w, result)
 }
 
 func SetInstallErrorForTesting(w http.ResponseWriter, r *http.Request) {

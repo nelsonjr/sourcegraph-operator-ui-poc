@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 )
@@ -25,11 +24,6 @@ func StageHandler(w http.ResponseWriter, r *http.Request) {
 	result := StageResponse{
 		Stage: string(currentStage),
 	}
-	response, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	switch currentStage {
 	case "refresh":
@@ -37,20 +31,14 @@ func StageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Sending current stage", result)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	sendJson(w, result)
 }
 
 func SetStageHandlerForTesting(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received request to set stage")
 
 	var request StageResponse
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	receiveJson(w, r, &request)
 
 	log.Println("Setting stage to", request.Stage)
 	currentStage = stage(request.Stage)

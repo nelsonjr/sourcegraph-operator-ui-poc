@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 )
@@ -28,31 +27,20 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	result := Status{
 		Services: serviceStatus,
 	}
-	response, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	if installError == "" {
 		installTasks = progressTasks(installTasks)
 	}
 
 	log.Println("Sending current status", result)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(response)
+	sendJson(w, result)
 }
 
 func SetStatusHandlerForTesting(w http.ResponseWriter, r *http.Request) {
 	log.Println("Received request to set status")
 
 	var request StatusRequest
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	receiveJson(w, r, &request)
 
 	log.Println("Setting health to", request.Healthy)
 	serviceStatus = serviceList(request.Healthy)
