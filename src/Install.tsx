@@ -1,4 +1,3 @@
-import { CardMembership } from "@mui/icons-material";
 import {
   Button,
   Checkbox,
@@ -11,9 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { changeStage } from "./debugBar";
 import cody from "../assets/cody.svg";
 import search from "../assets/sourcegraph.png";
+import { changeStage } from "./debugBar";
 
 export const Install: React.FC = () => {
   const [version, setVersion] = useState<string>("5.3.1");
@@ -47,7 +46,9 @@ export const Install: React.FC = () => {
       </Stack>
       <Checkbox
         sx={{ p: 0 }}
+        size="small"
         checked={installCody}
+        color="default"
         onChange={(e) => setInstallCody(e.target.checked)}
       />
     </Paper>
@@ -75,7 +76,12 @@ export const Install: React.FC = () => {
           Batch Changes, and Own.
         </Typography>
       </Stack>
-      <Checkbox sx={{ p: 0 }} checked={installSearch} />
+      <Checkbox
+        sx={{ p: 0 }}
+        color="default"
+        size="small"
+        checked={installSearch}
+      />
     </Paper>
   );
 
@@ -106,15 +112,17 @@ export const Install: React.FC = () => {
             <CodyEmbeddingsInstaller />
             <SearchInstaller />
           </div>
-          {allowInstall ? (
-            <Typography variant="caption">
-              Press install to begin installation.
-            </Typography>
-          ) : (
-            <Typography variant="caption" color="error">
-              Please select at least one component to install.
-            </Typography>
-          )}
+          <div className="message">
+            {allowInstall ? (
+              <Typography variant="caption">
+                Press install to begin installation.
+              </Typography>
+            ) : (
+              <Typography variant="caption" color="error">
+                Please select at least one component to install.
+              </Typography>
+            )}
+          </div>
           <Button
             variant="contained"
             sx={{ width: 200 }}
