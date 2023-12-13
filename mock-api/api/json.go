@@ -13,7 +13,6 @@ func sendJson(w http.ResponseWriter, result interface{}) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	w.Write(response)
 }
 
