@@ -1,12 +1,15 @@
+import SailingIcon from "@mui/icons-material/Sailing";
+import { Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import logo from "../assets/sourcegraph-reverse-logo.png";
+import { Login } from "./Login";
 import { OperatorDebugBar } from "./OperatorDebugBar";
 import { OperatorStatus } from "./OperatorStatus";
-import { Typography } from "@mui/material";
-import SailingIcon from "@mui/icons-material/Sailing";
-import { useEffect, useState } from "react";
+import { adminPassword, call } from "./api";
 
 const FetchStateTimerMs = 1 * 1000;
+const WaitToLoginAfterConnectMs = 1 * 1000;
 
 export type stage =
   | "unknown"
@@ -21,54 +24,83 @@ export interface ContextProps {
   context: OutletContext;
 }
 
-interface StatusResult {
+export interface OutletContext {
   online: boolean;
+  onlineDate?: number;
   stage?: stage;
+  needsLogin?: boolean;
 }
 
-const fetchStatus = async (): Promise<StatusResult> =>
-  new Promise<StatusResult>((resolve) => {
-    fetch("/api/operator/v1beta1/stage")
+const fetchStatus = async (
+  lastContext: OutletContext
+): Promise<OutletContext> =>
+  new Promise<OutletContext>((resolve) => {
+    call("/api/operator/v1beta1/stage")
       .then((result) => {
         if (!result.ok) {
-          resolve({ online: false });
+          if (result.status === 401) {
+            resolve({
+              online: false,
+              needsLogin: true,
+              onlineDate: lastContext.onlineDate ?? Date.now(),
+            });
+          } else {
+            resolve({ online: false, onlineDate: undefined });
+          }
           return;
         }
         return result;
       })
       .then((result) => result?.json())
       .then((result) => {
-        resolve({ online: true, stage: result.stage });
+        resolve({
+          online: true,
+          stage: result.stage,
+          onlineDate: lastContext.onlineDate ?? Date.now(),
+        });
       })
       .catch(() => {
-        resolve({ online: false });
+        resolve({ online: false, onlineDate: undefined });
       });
   });
 
-export interface OutletContext {
-  online: boolean;
-  stage: stage;
-}
-
 export const Frame: React.FC = () => {
-  const [online, setOnline] = useState<boolean>(false);
-  const [stage, setStage] = useState<stage>("unknown");
+  const [context, setContext] = useState<OutletContext>({
+    online: false,
+  });
+  const [login, setLogin] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>();
+  const [failedLogin, setFailedLogin] = useState<boolean>(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      fetchStatus().then((result) => {
-        setOnline(result.online);
-        if (result.online && result.stage) {
-          setStage(result.stage);
+      if (failedLogin) {
+        setLogin(true);
+      }
+
+      fetchStatus(context).then((result) => {
+        setContext(result);
+        if (result.needsLogin) {
+          setLogin(true);
+          if (password !== undefined) {
+            setFailedLogin(true);
+          }
+        } else {
+          setLogin(false);
+          setFailedLogin(false);
         }
       });
     }, FetchStateTimerMs);
     return () => clearInterval(timer);
-  }, []);
+  }, [password, failedLogin, context]);
 
-  const context: OutletContext = {
-    online: online,
-    stage: stage,
+  useEffect(() => {
+    adminPassword.password = password;
+  }, [password]);
+
+  const doLogin = (p: string) => {
+    setPassword(p);
+    setFailedLogin(false);
   };
 
   return (
@@ -80,7 +112,13 @@ export const Frame: React.FC = () => {
         <Typography variant="h4">Nemo Ride Management</Typography>
       </header>
       <div id="content">
-        <Outlet context={context} />
+        {login &&
+        context.onlineDate &&
+        context.onlineDate < Date.now() - WaitToLoginAfterConnectMs ? (
+          <Login onLogin={doLogin} failed={failedLogin} />
+        ) : (
+          <Outlet context={context} />
+        )}
       </div>
       <OperatorDebugBar context={context} />
       <OperatorStatus context={context} />

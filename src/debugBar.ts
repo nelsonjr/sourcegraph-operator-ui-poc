@@ -1,4 +1,5 @@
 import { stage } from "./Frame";
+import { call } from "./api";
 
 export const maintenance = ({
   healthy,
@@ -7,12 +8,12 @@ export const maintenance = ({
   healthy: boolean;
   onDone?: () => void;
 }): Promise<void> => {
-  return fetch("/api/operator/v1beta1/fake/maintenance/healthy", {
+  return call("/api/operator/v1beta1/fake/maintenance/healthy", {
     method: "POST",
     body: JSON.stringify({ healthy: healthy }),
   })
     .then(() => {
-      fetch("/api/operator/v1beta1/fake/stage", {
+      call("/api/operator/v1beta1/fake/stage", {
         method: "POST",
         body: JSON.stringify({ stage: "maintenance" }),
       }).then(() => {
@@ -37,7 +38,7 @@ export const changeStage = ({
   data?: string;
   onDone?: () => void;
 }) => {
-  fetch("/api/operator/v1beta1/fake/stage", {
+  call("/api/operator/v1beta1/fake/stage", {
     method: "POST",
     body: JSON.stringify({ stage: action, data }),
   }).then(() => {

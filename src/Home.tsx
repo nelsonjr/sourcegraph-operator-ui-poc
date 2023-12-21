@@ -9,7 +9,7 @@ export const Home: React.FC = () => {
   return (
     <div className="home">
       <CircularProgress />
-      {context.online ? (
+      {context.online || context.needsLogin ? (
         <>
           <Typography variant="h5">
             Operator connected. Please wait...
