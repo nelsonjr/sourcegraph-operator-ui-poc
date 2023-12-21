@@ -1,18 +1,20 @@
 VERSION=v0.0.$$(( $(shell date +%s) - 1703122377 ))
 
+REGISTRY=us-central1-docker.pkg.dev/nelsona-sandbox/nelsona-dev-images
+
 .PHONY: all
 
 all:
-	make .version VERSION=${VERSION}
-	make build VERSION=${VERSION}
-	make pkg VERSION=${VERSION}
+	make .version VERSION=${VERSION} REGISTRY=${REGISTRY}
+	make build VERSION=${VERSION} REGISTRY=${REGISTRY}
+	make pkg VERSION=${VERSION} REGISTRY=${REGISTRY}
 
 build:
 	@echo "---------------------------------------"
 	@echo "Building ${VERSION}..."
 	@echo "---------------------------------------"
-	make build.api VERSION=${VERSION}
-	make build.ui VERSION=${VERSION}
+	make build.api VERSION=${VERSION} REGISTRY=${REGISTRY}
+	make build.ui VERSION=${VERSION} REGISTRY=${REGISTRY}
 	@echo "---------------------------------------"
 	@echo "Build ${VERSION} complete"
 	@echo "---------------------------------------"
@@ -21,9 +23,9 @@ pkg:
 	@echo "---------------------------------------"
 	@echo "Packging ${VERSION}..."
 	@echo "---------------------------------------"
-	make pkg.api VERSION=${VERSION}
-	make pkg.ui VERSION=${VERSION}
-	make helm VERSION=${VERSION}
+	make pkg.api VERSION=${VERSION} REGISTRY=${REGISTRY}
+	make pkg.ui VERSION=${VERSION} REGISTRY=${REGISTRY}
+	make helm VERSION=${VERSION} REGISTRY=${REGISTRY}
 	@echo "---------------------------------------"
 	@echo "Package ${VERSION} complete"
 	@echo "---------------------------------------"
@@ -38,18 +40,19 @@ build.ui:
 	cd ../frontend && pnpm run build
 
 pkg.ui:
-	make -C ui VERSION=${VERSION}
+	make -C ui VERSION=${VERSION} REGISTRY=${REGISTRY}
 
 build.api:
 	cd ../backend && go mod download
 	cd ../backend && GOOS=linux GOARCH=amd64 go build -o dist/operator-api ./cmd
 
 pkg.api:
-	make -C api VERSION=${VERSION}
+	make -C api VERSION=${VERSION} REGISTRY=${REGISTRY}
 
 helm:
 	@echo "Updating Helm to version ${VERSION}"
 	cat ../helm/values.yaml \
+	  | sed -e "s#registry:.*#registry: ${REGISTRY}#" \
 	  | sed -e "s/\(.*image:.*\):[^:]*/\1:${VERSION}/" \
 	  > ../helm/values.yaml.tmp
 	mv ../helm/values.yaml.tmp ../helm/values.yaml
