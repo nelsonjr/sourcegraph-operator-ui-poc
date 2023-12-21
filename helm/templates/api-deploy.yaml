@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: operator-api
-          image: {{ .Values.api.image }}
+          image: {{ .Values.registry }}/{{ .Values.api.image }}
           ports:
             - containerPort: 80
           env:

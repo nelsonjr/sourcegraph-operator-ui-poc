@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: operator-ui
-          image: {{ .Values.webui.image }}
+          image: {{ .Values.registry }}/{{ .Values.webui.image }}
           ports:
             - containerPort: 80
           env:
