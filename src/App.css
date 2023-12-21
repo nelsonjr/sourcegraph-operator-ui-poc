@@ -90,7 +90,9 @@ HEADER {
 .install,
 .progress,
 .maintenance,
-.wait-for-admin {
+.wait-for-admin,
+.login,
+.public-message {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,6 +163,19 @@ HEADER {
 
 .install IMG {
   height: 32px;
+}
+
+.login > * {
+  max-width: 20rem;
+}
+
+.public-message {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.public-message .login-message {
+  margin-top: 10rem;
 }
 
 .spacer {

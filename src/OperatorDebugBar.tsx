@@ -2,6 +2,7 @@ import { Button, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ContextProps, stage } from "./Frame";
 import { changeStage, maintenance } from "./debugBar";
+import { call } from "./api";
 
 const DebugBarTimerMs = 1 * 1000;
 
@@ -18,7 +19,7 @@ export const OperatorDebugBar: React.FC<ContextProps> = ({ context }) => {
   const noState = () => setStage("unknown");
   const launchAdminUI = () => setStage("refresh");
   const failInstall = () => {
-    fetch("/api/operator/v1beta1/fake/install/fail", {
+    call("/api/operator/v1beta1/fake/install/fail", {
       method: "POST",
     }).then(() => {
       setWaiting(true);

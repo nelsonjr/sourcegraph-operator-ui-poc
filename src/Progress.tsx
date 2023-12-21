@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import classnames from "classnames";
 import React, { Fragment, useEffect, useState } from "react";
+import { call } from "./api";
 
 type Task = {
   title: string;
@@ -106,7 +107,7 @@ export const Progress: React.FC<{
 
   useEffect(() => {
     const timer = setInterval(() => {
-      fetch("/api/operator/v1beta1/install/progress")
+      call("/api/operator/v1beta1/install/progress")
         .then((result) => result.json())
         .then((result) => {
           setVersion(result.version);

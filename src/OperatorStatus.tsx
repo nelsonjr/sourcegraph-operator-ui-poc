@@ -2,10 +2,11 @@ import { Navigate } from "react-router-dom";
 import { ContextProps } from "./Frame";
 
 export const OperatorStatus: React.FC<ContextProps> = ({ context }) => {
+  console.log(context);
   const Status = () =>
     context.online === undefined ? (
       <div className="status connecting">connecting</div>
-    ) : context.online === true ? (
+    ) : context.online === true || context.needsLogin === true ? (
       <div className="status online">online</div>
     ) : (
       <div className="status offline">offline</div>

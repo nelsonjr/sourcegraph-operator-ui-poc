@@ -11,6 +11,7 @@ import {
 import classNames from "classnames";
 import { Fragment, useEffect, useState } from "react";
 import { maintenance } from "./debugBar";
+import { call } from "./api";
 
 const MaintenanceStatusTimerMs = 1 * 1000;
 const WaitToLaunchFixMs = 5 * 1000;
@@ -66,7 +67,7 @@ export const Maintenance: React.FC = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      fetch("/api/operator/v1beta1/maintenance/status")
+      call("/api/operator/v1beta1/maintenance/status")
         .then((response) => response.json())
         .then(setStatus);
     }, MaintenanceStatusTimerMs);
@@ -82,12 +83,13 @@ export const Maintenance: React.FC = () => {
     }
   }, [fixing]);
 
+  const ready = status?.services.length !== undefined;
   const unhealthy = status?.services?.find((s: Service) => !s.healthy);
 
   return (
     <div className="maintenance">
       <Typography variant="h3">Maintenance Page</Typography>
-      {status?.services.length !== undefined ? (
+      {ready ? (
         unhealthy ? (
           <Alert severity="warning">
             Something is wrong. Please check the logs and actions below to
@@ -96,10 +98,16 @@ export const Maintenance: React.FC = () => {
         ) : (
           <Alert severity="success">Everything is pretty around here!</Alert>
         )
-      ) : null}
+      ) : (
+        <CircularProgress />
+      )}
 
-      <Typography variant="h5">Service Status</Typography>
-      <ShowServices services={status?.services ?? []} />
+      {ready ? (
+        <>
+          <Typography variant="h5">Service Status</Typography>
+          <ShowServices services={status?.services ?? []} />
+        </>
+      ) : null}
 
       {unhealthy && (
         <>
