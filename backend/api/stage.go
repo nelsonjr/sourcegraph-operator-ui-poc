@@ -3,6 +3,8 @@ package api
 import (
 	"log"
 	"net/http"
+
+	"sourcegraph.com/operator/api/operator"
 )
 
 type StageResponse struct {
@@ -10,9 +12,7 @@ type StageResponse struct {
 	Data  string `json:"data"`
 }
 
-type stage string
-
-var currentStage stage = "unknown"
+var currentStage operator.Stage = operator.StageUnknown
 
 func init() {
 	log.Println("Initial stage:", currentStage)
@@ -26,8 +26,8 @@ func StageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch currentStage {
-	case "refresh":
-		currentStage = "unknown"
+	case operator.StageRefresh:
+		currentStage = operator.StageUnknown
 	}
 
 	log.Println("Sending current stage", result)
@@ -41,14 +41,14 @@ func SetStageHandlerForTesting(w http.ResponseWriter, r *http.Request) {
 	receiveJson(w, r, &request)
 
 	log.Println("Setting stage to", request.Stage)
-	currentStage = stage(request.Stage)
+	currentStage = operator.Stage(request.Stage)
 
 	switch currentStage {
-	case "installing":
+	case operator.StageInstalling:
 		installError = ""
 		installTasks = createFakeTasks()
 		installVersion = request.Data
-	case "upgrading":
+	case operator.StageUpgrading:
 		installError = ""
 		installTasks = createFakeUpgradeTasks()
 		installVersion = request.Data

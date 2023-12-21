@@ -3,20 +3,12 @@ package api
 import (
 	"math/rand"
 	"time"
+
+	"sourcegraph.com/operator/api/operator"
 )
 
-type Task struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Started     bool      `json:"started"`
-	Finished    bool      `json:"finished"`
-	Weight      int       `json:"weight"`
-	Progress    int       `json:"progress"`
-	LastUpdate  time.Time `json:"lastUpdate"`
-}
-
-func createFakeTasks() []Task {
-	return []Task{
+func createFakeTasks() []operator.Task {
+	return []operator.Task{
 		{
 			Title:       "Install",
 			Description: "Install Sourcegraph",
@@ -55,8 +47,8 @@ func createFakeTasks() []Task {
 	}
 }
 
-func createFakeUpgradeTasks() []Task {
-	return []Task{
+func createFakeUpgradeTasks() []operator.Task {
+	return []operator.Task{
 		{
 			Title:       "Upgrade",
 			Description: "Upgrade Sourcegraph",
@@ -74,8 +66,8 @@ func createFakeUpgradeTasks() []Task {
 	}
 }
 
-func progressTasks(tasks []Task) []Task {
-	var result []Task
+func progressTasks(tasks []operator.Task) []operator.Task {
+	var result []operator.Task
 
 	var previousStarted bool = true
 	var previousFinished bool = true
@@ -94,8 +86,8 @@ func progressTasks(tasks []Task) []Task {
 	return result
 }
 
-func calculateProgress(tasks []Task) ([]Task, int) {
-	var result []Task
+func calculateProgress(tasks []operator.Task) ([]operator.Task, int) {
+	var result []operator.Task
 
 	var taskWeights int = 0
 	for _, t := range installTasks {
