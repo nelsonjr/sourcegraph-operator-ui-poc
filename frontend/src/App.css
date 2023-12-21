@@ -1,0 +1,183 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --background: rgb(26, 15, 34);
+  --background-2: linear-gradient(
+    135deg,
+    rgba(26, 15, 34, 1) 0%,
+    rgba(86, 17, 143, 1) 100%
+  );
+  --item-grid-border: rgb(100, 40, 148);
+  --task-installing-background: var(--item-grid-border);
+  --install-component-border: rgb(100, 40, 148);
+}
+
+BODY {
+  background: var(--background);
+  background: var(--background-2);
+  color: white;
+}
+
+#logo {
+  height: 48px;
+}
+
+#frame {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+HEADER {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--background);
+  background: var(--background-2);
+}
+
+#content {
+  flex: 1;
+  margin: 1.5rem;
+}
+
+#operator-status {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0.5rem 1rem;
+  padding-right: 1.5rem;
+  border-radius: 0 1cap 0 0;
+  color: black;
+  background-color: lightgray;
+}
+
+#operator-status .status {
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+#operator-status .offline {
+  color: red;
+  font-weight: bold;
+}
+
+#operator-status .online {
+  color: green;
+  font-weight: bold;
+}
+
+#operator-status .connecting {
+  color: magenta;
+  font-weight: bold;
+}
+
+#operator-debug {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home,
+.install,
+.progress,
+.maintenance,
+.wait-for-admin,
+.login,
+.public-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.home {
+  gap: 1rem;
+}
+
+.progress .task-grid,
+.maintenance .service-grid {
+  border-top: 1px solid var(--item-grid-border);
+  width: 40rem;
+  margin-top: 1rem;
+}
+
+.progress .task-grid-item,
+.maintenance .service-item {
+  padding: 0;
+}
+
+.progress .task-grid-item.MuiGrid-item,
+.maintenance .service-item.MuiGrid-item,
+.maintenance .service-header.MuiGrid-item {
+  display: flex;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--item-grid-border);
+}
+
+.maintenance .service-item.healthy {
+  color: lightgreen;
+}
+
+.maintenance .service-item.unhealthy {
+  color: lightcoral;
+}
+
+.progress .task-grid-item.running {
+  background-color: var(--task-installing-background);
+}
+
+.progress,
+.wait-for-admin {
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.install,
+.maintenance {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2rem;
+}
+
+.install .components {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.install .components .MuiPaper-root {
+  border-left: 4px solid var(--install-component-border);
+}
+
+.install IMG {
+  height: 32px;
+}
+
+.login > * {
+  max-width: 20rem;
+}
+
+.public-message {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.public-message .login-message {
+  margin-top: 10rem;
+}
+
+.spacer {
+  flex: 1;
+}
