@@ -4,8 +4,9 @@ export const call = (
   input: RequestInfo | URL,
   init?: RequestInit
 ): Promise<Response> => {
-  return fetch(input, {
+  return fetch(`${process.env.API_ENDPOINT ?? ""}${input}`, {
     ...init,
+    mode: "cors",
     headers: {
       ...init?.headers,
       "admin-password": adminPassword.password ?? "no-password",

@@ -47,9 +47,32 @@ func (s *server) enableDebugBarApi(r *mux.Router) {
 }
 
 func (s *server) authenticated(r *mux.Router, path string, handler http.HandlerFunc, methods ...string) {
-	r.HandleFunc(path, ensureAuthenticated(handler)).Methods(methods...)
+	var allMethods []string
+	allMethods = append(allMethods, methods...)
+	allMethods = append(allMethods, "OPTIONS")
+	r.HandleFunc(path, cors(ensureAuthenticated(handler))).Methods(allMethods...)
 }
 
 func (s *server) public(r *mux.Router, path string, handler http.HandlerFunc, methods ...string) {
-	r.HandleFunc(path, handler).Methods(methods...)
+	var allMethods []string
+	allMethods = append(allMethods, methods...)
+	allMethods = append(allMethods, "OPTIONS")
+	r.HandleFunc(path, cors(handler)).Methods(allMethods...)
+}
+
+func cors(endpoint http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", "*") // Allow any origin
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Admin-Password")
+
+		// Handle preflight requests
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		endpoint.ServeHTTP(w, r)
+	}
 }

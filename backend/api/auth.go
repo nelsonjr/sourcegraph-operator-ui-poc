@@ -21,8 +21,9 @@ func ensureAuthenticated(endpoint http.HandlerFunc) http.HandlerFunc {
 		if !checkAdminKey(r) {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Unauthorized"))
+		} else {
+			endpoint.ServeHTTP(w, r)
 		}
-		endpoint.ServeHTTP(w, r)
 	}
 }
 

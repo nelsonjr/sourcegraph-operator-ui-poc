@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operator-api
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: operator-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: operator-api
+  template:
+    metadata:
+      labels:
+        app: operator-api
+    spec:
+      containers:
+        - name: operator-api
+          image: {{ .Values.api.image }}
+          ports:
+            - containerPort: 80
+          env:
+            - name: MAINTENANCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: operator-api
+                  key: MAINTENANCE_PASSWORD

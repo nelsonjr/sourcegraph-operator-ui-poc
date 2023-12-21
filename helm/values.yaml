@@ -1,0 +1,7 @@
+namespace: sourcegraph
+
+webui:
+  image: us-central1-docker.pkg.dev/nelsona-sandbox/nelsona-dev-images/operator-ui:v0.0.9358
+
+api:
+  image: us-central1-docker.pkg.dev/nelsona-sandbox/nelsona-dev-images/operator-api:v0.0.9358

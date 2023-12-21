@@ -1,0 +1,8 @@
+apiVersion: v2
+name: operator
+description: Operator Maintenance UI
+
+type: application
+
+version: v0.0.9358
+appVersion: "v0.0.9358"
