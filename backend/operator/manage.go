@@ -3,6 +3,7 @@ package operator
 type K8sManager interface {
 	Status() *status
 	Install(version string) error
+	Upgrade(version string) error
 }
 
 func New() K8sManager {
@@ -10,13 +11,11 @@ func New() K8sManager {
 }
 
 type status struct {
-	Stage      Stage   `json:"stage"`
-	Version    *string `json:"version"` // current version, nil if not installed
-	Deployment struct {
-		Version string   `json:"version"` // version being installed/upgraded
-		Errors  []string `json:"errors"`
-	} `json:"deployment"`
-	Tasks []Task `json:"tasks"`
+	Stage          Stage    `json:"stage"`
+	CurrentVersion *string  `json:"version"`     // current version, nil if not installed
+	NextVersion    *string  `json:"nextVersion"` // version being installed/upgraded nil if not being installed/upgraded
+	Tasks          []Task   `json:"tasks"`
+	Errors         []string `json:"errors"`
 }
 
 type Stage string
@@ -39,6 +38,16 @@ type manager struct{}
 //
 // Once the request is accepted, the status can be tracked via the Status() method.
 func (*manager) Install(version string) error {
+	panic("unimplemented")
+}
+
+// Asks the Operator to upgrade to the specified version.
+//
+// Returns an error if the upgrade was not successful,
+// if the version is not supported, or if there's no existing version installed.
+//
+// Once the request is accepted, the status can be tracked via the Status() method.
+func (*manager) Upgrade(version string) error {
 	panic("unimplemented")
 }
 
