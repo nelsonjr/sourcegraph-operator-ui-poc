@@ -11,6 +11,7 @@
   );
   --item-grid-border: rgb(100, 40, 148);
   --task-installing-background: var(--item-grid-border);
+  --install-component-border: rgb(100, 40, 148);
 }
 
 BODY {
@@ -144,6 +145,22 @@ HEADER {
   justify-content: flex-start;
   align-items: center;
   gap: 2rem;
+}
+
+.install .components {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.install .components .MuiPaper-root {
+  border-left: 4px solid var(--install-component-border);
+}
+
+.install IMG {
+  height: 32px;
 }
 
 .spacer {
